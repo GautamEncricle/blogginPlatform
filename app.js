@@ -1,7 +1,6 @@
 const express = require('express');
-const mongoose = require('mongoose');
-const Blog = require('./models/blog.model');
 const blogRoutes = require('./routes/blog.routes');
+const UserRoutes = require("./routes/user.routes");
 const cors = require('cors');
 
 const app = express();
@@ -11,5 +10,6 @@ app.use(cors({
 }))
 
 app.use('/blog', blogRoutes);
+app.use('/user', UserRoutes);
 
 module.exports = app;
