@@ -55,16 +55,24 @@ exports.login = asyncHandler(async (req, res, next) => {
     console.log("Failed to create token");
   }
 
-  res.cookie("token", token, {
+  res.cookie('token', token, {
     httpOnly: true,
-    secure: false,
-    maxAge: 3 * 24 * 60 * 60 * 1000,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "Strict",
+    maxAge: 24 * 60 * 60 * 1000,
   });
 
-  res.status(202).json({
-    status: "success",
-    message: "User logged in successfully 🥳",
+  // Send back user info
+  res.status(200).json({
+    success: true,
+    message: "Logged in successfully",
+    user: {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+    },
   });
+  
 });
 
 exports.updateUser = asyncHandler(async (req, res, next) => {
