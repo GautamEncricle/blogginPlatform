@@ -17,8 +17,7 @@ const blogSchema = new mongoose.Schema(
     author: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: false,
-      default: "anonymous",
+      required: true,
     },
   },
   { timestamps: true }

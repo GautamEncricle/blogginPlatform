@@ -8,7 +8,6 @@ const {
 const { protect } = require("../middlewares/authMiddlewares");
 
 router.route("/register").post(register);
-
 router.route("/login").post(login);
 
 router.route("/update/:id").patch(protect, updateUser);

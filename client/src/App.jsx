@@ -6,6 +6,9 @@ import Dashboard from "./pages/Dashboard";
 import AuthLayout from "./routes/AuthLayout";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import Signup from './pages/SignUp';
+import BlogView from './pages/BlogView';
+import BlogCreate from './pages/BlogCreate';
+import BlogUpdate from './pages/BlogUpdate';
 
 function App() {
   return (
@@ -16,6 +19,9 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route element={<AuthLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/blogs" element={<BlogView />} />
+          <Route path="/blog-create" element={<BlogCreate />} />
+          <Route path="/blog/update/:id" element={<BlogUpdate />} />
         </Route>
       </Routes>
     </AuthProvider>

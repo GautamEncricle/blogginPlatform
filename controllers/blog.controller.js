@@ -4,31 +4,39 @@ const ApiError = require("../utils/ApiError");
 
 //get all blogs
 exports.getAllBlogs = asyncHandler(async (req, res, next) => {
-  const blogs = await Blog.find().sort({ createdAt: -1 });
-  if (!blogs) {
-    return next(new ApiError(500, "Failed to get blogs!"));
-  }
+  const blogs = await Blog.find()
+    .populate("author", "username")
+    .sort({ createdAt: -1 })
+    .lean();
+
   res.status(200).json({
     statusCode: "success",
-    message: "blogs fetched successfully",
+    message: "Blogs fetched successfully",
+    results: blogs.length,
     blogs,
   });
 });
 
 exports.getBlogById = asyncHandler(async (req, res, next) => {
-  const { id } = req.params(id);
-  const blog = await Blog.findById(id);
-  if (!blogs) {
-    return next(new ApiError(500, "Failed to get blogs!"));
+  const { id } = req.params; // ✅ Correct destructuring
+
+  const blog = await Blog.findById(id).populate("author", "username").lean(); // ✅ populate author
+
+  if (!blog) {
+    return next(new ApiError(404, "Blog not found"));
   }
+
   res.status(200).json({
     statusCode: "success",
-    message: "blogs fetched successfully",
-    blogs,
+    message: "Blog fetched successfully",
+    blog,
   });
 });
 
+
 exports.createBlog = asyncHandler(async (req, res, next) => {
+  // Set author from authenticated user
+  req.body.author = req.user?._id || "anonymous";
   const newBlog = await Blog.create(req.body);
 
   if (!newBlog) {
@@ -41,8 +49,17 @@ exports.createBlog = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.updateBlog = asyncHandler(async (req, res) => {
-  const { id } = req.params(id);
+
+exports.updateBlog = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const blog = await Blog.findById(id);
+  if (!blog) {
+    return next(new ApiError(404, "Blog not found"));
+  }
+  if (blog.author.toString() !== req.user._id.toString()) {
+    return next(new ApiError(403, "You are not authorized to update this blog"));
+  }
+
   const updatedBlog = await Blog.findByIdAndUpdate(id, req.body, {
     new: true,
     runValidators: true,
@@ -57,9 +74,16 @@ exports.updateBlog = asyncHandler(async (req, res) => {
   });
 });
 
-//delete blog
-exports.deleteBlog = asyncHandler(async (req, res) => {
-  const { id } = req.params(id);
+exports.deleteBlog = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const blog = await Blog.findById(id);
+  if (!blog) {
+    return next(new ApiError(404, "Blog not found"));
+  }
+  if (blog.author.toString() !== req.user._id.toString()) {
+    return next(new ApiError(403, "You are not authorized to delete this blog"));
+  }
+
   const deletedBlog = await Blog.findByIdAndDelete(id);
   if (!deletedBlog) {
     return next(new ApiError(500, "Failed to delete blog!"));
