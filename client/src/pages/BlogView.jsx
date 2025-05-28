@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "../api/axios";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function BlogView() {
   const [blogs, setBlogs] = useState([]);
@@ -8,6 +9,7 @@ function BlogView() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  const { user } = useAuth();
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
@@ -56,20 +58,23 @@ function BlogView() {
             <p className="text-sm text-gray-400">
               Created at: {new Date(blog.createdAt).toLocaleString()}
             </p>
-            <div className="mt-4 flex space-x-4">
-              <button
-                onClick={() => handleEdit(blog._id)}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => handleDelete(blog._id)}
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
-              >
-                Delete
-              </button>
-            </div>
+            {user?.username === blog.author?.username && (
+              <div className="mt-4 flex space-x-4">
+                <button
+                  onClick={() => handleEdit(blog._id)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(blog._id)}
+                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+                >
+                  Delete
+                </button>
+              </div>
+            )}
+
           </div>
         ))
       )}

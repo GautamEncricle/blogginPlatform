@@ -18,7 +18,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
   }
 
   const decode = jwt.verify(token, process.env.JWT_SECRET_KEY);
-  const user = await User.findById(decode.id).select("+password");
+  const user = await User.findById(decode.id).select("-password");
   if (!user) {
     return next(new ApiError(401, "Invalid token or authorization!"));
   }

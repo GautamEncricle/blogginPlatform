@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "../api/axios";
 import { useNavigate, useParams } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function BlogUpdate() {
     const { id } = useParams();
@@ -12,6 +13,7 @@ function BlogUpdate() {
         const fetchBlog = async () => {
             try {
                 const res = await axios.get(`/blog/getAll/${id}`);
+                console.log(res);
                 setForm({
                     title: res.data.blog.title,
                     description: res.data.blog.description,
